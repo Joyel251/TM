@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Turing Machine Simulator</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <header>
+        <h1>Turing Machine Simulator</h1>
+        <p>Define states, input alphabets, transition functions and simulate the computation</p>
+    </header>
+
+    <div class="examples-panel">
+        <h2>Example Machines</h2>
+        <div class="examples-container">
+            <button class="example-btn" data-example="palindrome">Palindrome Checker</button>
+            <button class="example-btn" data-example="evenBinary">Even Binary Numbers</button>
+            <button class="example-btn" data-example="binaryAddition">Binary Addition</button>
+            <button class="example-btn" data-example="copyString">String Copy Machine</button>
+            <button class="example-btn" data-example="threeZeros">Accept Strings with Three Zeros</button>
+        </div>
+        <div class="example-description" id="example-description">
+            Select an example to see its description and load it.
+        </div>
+    </div>
+
+    <main>
+        <section class="config-panel">
+            <h2>Machine Configuration</h2>
+            
+            <div class="config-tabs">
+                <button class="tab-btn active" data-tab="basic-config">Basic Settings</button>
+                <button class="tab-btn" data-tab="transition-config">Transitions</button>
+            </div>
+            
+            <div class="tab-content active" id="basic-config">
+                <div class="form-group">
+                    <label for="states" class="tooltip-container">
+                        States (comma separated):
+                        <span class="tooltip-text">List all states of your Turing Machine</span>
+                    </label>
+                    <input type="text" id="states" placeholder="q0, q1, q2, ..." value="q0, q1, q2, qAccept, qReject">
+                </div>
+                
+                <div class="form-group">
+                    <label for="initial-state" class="tooltip-container">
+                        Initial State:
+                        <span class="tooltip-text">Starting state of the machine</span>
+                    </label>
+                    <input type="text" id="initial-state" placeholder="q0" value="q0">
+                </div>
+                
+                <div class="form-group">
+                    <label for="accept-state" class="tooltip-container">
+                        Accept State:
+                        <span class="tooltip-text">State that indicates input acceptance</span>
+                    </label>
+                    <input type="text" id="accept-state" placeholder="qAccept" value="qAccept">
+                </div>
+                
+                <div class="form-group">
+                    <label for="reject-state" class="tooltip-container">
+                        Reject State:
+                        <span class="tooltip-text">State that indicates input rejection</span>
+                    </label>
+                    <input type="text" id="reject-state" placeholder="qReject" value="qReject">
+                </div>
+                
+                <div class="form-group">
+                    <label for="input-alphabet" class="tooltip-container">
+                        Input Alphabet (comma separated):
+                        <span class="tooltip-text">Symbols that can appear in input</span>
+                    </label>
+                    <input type="text" id="input-alphabet" placeholder="0, 1, ..." value="0, 1">
+                </div>
+                
+                <div class="form-group">
+                    <label for="tape-alphabet" class="tooltip-container">
+                        Tape Alphabet (comma separated):
+                        <span class="tooltip-text">All symbols that can appear on the tape</span>
+                    </label>
+                    <input type="text" id="tape-alphabet" placeholder="0, 1, B, ..." value="0, 1, B">
+                </div>
+                
+                <div class="form-group">
+                    <label for="blank-symbol" class="tooltip-container">
+                        Blank Symbol:
+                        <span class="tooltip-text">Symbol for empty cells</span>
+                    </label>
+                    <input type="text" id="blank-symbol" placeholder="B" value="B">
+                </div>
+                
+                <div class="form-group">
+                    <label for="input-string" class="tooltip-container">
+                        Input String:
+                        <span class="tooltip-text">String to be processed by the machine</span>
+                    </label>
+                    <input type="text" id="input-string" placeholder="01101..." value="1101">
+                </div>
+                
+                <div class="button-group">
+                    <button id="save-machine" class="btn primary-btn">
+                        <i class="fas fa-save"></i> Save Machine
+                    </button>
+                    <button id="load-machine" class="btn secondary-btn">
+                        <i class="fas fa-folder-open"></i> Load Machine
+                    </button>
+                    <button id="clear-machine" class="btn danger-btn">
+                        <i class="fas fa-trash-alt"></i> Clear
+                    </button>
+                </div>
+            </div>
+            
+            <div class="tab-content" id="transition-config">
+                <h3>Transition Function</h3>
+                <p class="help-text">Define how the machine transitions between states, writes symbols and moves the head.</p>
+                
+                <div class="transition-table-container">
+                    <table id="transition-table">
+                        <thead>
+                            <tr>
+                                <th class="tooltip-container">
+                                    Current State
+                                    <span class="tooltip-text">State the machine is currently in</span>
+                                </th>
+                                <th class="tooltip-container">
+                                    Current Symbol
+                                    <span class="tooltip-text">Symbol currently under the read/write head</span>
+                                </th>
+                                <th class="tooltip-container">
+                                    New State
+                                    <span class="tooltip-text">State to transition to</span>
+                                </th>
+                                <th class="tooltip-container">
+                                    Write Symbol
+                                    <span class="tooltip-text">Symbol to write at current position</span>
+                                </th>
+                                <th class="tooltip-container">
+                                    Move Direction
+                                    <span class="tooltip-text">Direction to move the head (Left, Right, or Stay)</span>
+                                </th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="transition-body">
+                            <!-- Transition rows will be added here dynamically -->
+                        </tbody>
+                    </table>
+                    <button id="add-transition" class="btn success-btn">
+                        <i class="fas fa-plus"></i> Add Transition
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <section class="simulation-panel">
+            <h2>Simulation</h2>
+            
+            <div class="machine-diagram">
+                <div class="current-state-indicator">
+                    <div class="state-label">Current State:</div>
+                    <div id="current-state" class="state-circle">q0</div>
+                </div>
+            </div>
+            
+            <div class="tape-container">
+                <div class="tape-controls">
+                    <button id="tape-left" class="btn round-btn"><i class="fas fa-chevron-left"></i></button>
+                </div>
+                <div class="tape-wrapper">
+                    <div class="tape" id="tape">
+                        <!-- Tape cells will be added dynamically -->
+                    </div>
+                    <div class="head-pointer">
+                        <i class="fas fa-arrow-up"></i>
+                    </div>
+                </div>
+                <div class="tape-controls">
+                    <button id="tape-right" class="btn round-btn"><i class="fas fa-chevron-right"></i></button>
+                </div>
+            </div>
+            
+            <div class="simulation-controls">
+                <button id="reset-sim" class="btn primary-btn">
+                    <i class="fas fa-undo"></i> Reset
+                </button>
+                <button id="step-sim" class="btn info-btn">
+                    <i class="fas fa-step-forward"></i> Step
+                </button>
+                <button id="play-sim" class="btn success-btn">
+                    <i class="fas fa-play"></i> Run
+                </button>
+                <button id="pause-sim" class="btn warning-btn">
+                    <i class="fas fa-pause"></i> Pause
+                </button>
+                <div class="speed-control">
+                    <label for="sim-speed">Speed:</label>
+                    <input type="range" id="sim-speed" min="1" max="10" value="5">
+                    <span id="speed-value">Medium</span>
+                </div>
+            </div>
+            
+            <div class="simulation-info">
+                <div class="simulation-status">
+                    <h3><i class="fas fa-info-circle"></i> Status: <span id="status">Ready</span></h3>
+                    <div id="steps-count">Steps: 0</div>
+                </div>
+
+                <div class="current-transition">
+                    <h3><i class="fas fa-exchange-alt"></i> Current Transition:</h3>
+                    <div id="current-transition-details" class="transition-details">None</div>
+                </div>
+                
+                <div class="execution-history">
+                    <h3><i class="fas fa-history"></i> Execution Steps</h3>
+                    <div id="execution-history" class="history-container">
+                        <!-- Execution history will be added here -->
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <section class="info-panel">
+        <h2>Transition Table Overview</h2>
+        <div class="visual-transition-table" id="visual-transition-table">
+            <!-- Visual transition table will be generated here -->
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>About Turing Machines</h3>
+                <p>A Turing Machine is a mathematical model of computation that defines an abstract machine, which manipulates symbols on a strip of tape according to a table of rules.</p>
+            </div>
+            <div class="footer-section">
+                <h3>How to Use</h3>
+                <ul>
+                    <li>Define states and alphabet</li>
+                    <li>Create transition rules</li>
+                    <li>Enter an input string</li>
+                    <li>Run the simulation</li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Resources</h3>
+                <ul>
+                    <li><a href="https://en.wikipedia.org/wiki/Turing_machine" target="_blank">Wikipedia: Turing Machines</a></li>
+                    <li><a href="https://plato.stanford.edu/entries/turing-machine/" target="_blank">Stanford Encyclopedia: Turing Machines</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="created-by">
+            <h3>Created By</h3>
+            <ul>
+                <li>JOYEL IMMANUEL L</li>
+                <li>ALAN KISHOR S M</li>
+                <li>JARON C E</li>
+            </ul>
+        </div>
+        <div> <h5>still under development so some features has some bugs "running the tm is to be fixed</h5></div>
+    </footer>
+
+    <div id="transition-animation" class="transition-animation">
+        <!-- Transition animation elements will be generated here -->
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
