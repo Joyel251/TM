@@ -1,0 +1,6 @@
+this website is useful foe simulation of turing machines which helps you to visualize them 
+still under development 
+CREATED BY
+-Joyel Immanuel L
+-Alan kishor S M
+-Jaron C E
